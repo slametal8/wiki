@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Source Content Generator</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --text-color: #333;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: #f9f9f9;
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            min-height: 100vh;
+        }
+        
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 30px 0;
+            text-align: center;
+            box-shadow: var(--box-shadow);
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        nav {
+            background-color: white;
+            padding: 15px 0;
+            box-shadow: var(--box-shadow);
+            margin-bottom: 30px;
+        }
+        
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .menu {
+            display: flex;
+            list-style: none;
+        }
+        
+        .menu li {
+            margin-left: 25px;
+        }
+        
+        .menu a {
+            text-decoration: none;
+            color: var(--dark-color);
+            font-weight: 500;
+            transition: color 0.3s;
+            padding: 5px 10px;
+            border-radius: var(--border-radius);
+        }
+        
+        .menu a:hover {
+            color: var(--secondary-color);
+            background-color: var(--light-color);
+        }
+        
+        .search-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 30px;
+        }
+        
+        .search-form {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+        }
+        
+        .api-selector {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            background-color: white;
+            min-width: 150px;
+        }
+        
+        .search-button {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+        
+        .search-button:hover {
+            background-color: #2980b9;
+        }
+        
+        .main-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+        
+        .article-title {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--light-color);
+        }
+        
+        .article-content {
+            line-height: 1.8;
+        }
+        
+        .article-content p {
+            margin-bottom: 15px;
+        }
+        
+        .sidebar {
+            background-color: white;
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            height: fit-content;
+        }
+        
+        .sidebar-title {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--light-color);
+        }
+        
+        .related-articles {
+            list-style: none;
+        }
+        
+        .related-articles li {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .related-articles a {
+            text-decoration: none;
+            color: var(--secondary-color);
+            font-weight: 500;
+            display: block;
+            transition: color 0.3s;
+            cursor: pointer;
+        }
+        
+        .related-articles a:hover {
+            color: var(--accent-color);
+        }
+        
+        .related-summary {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        footer {
+            background-color: var(--dark-color);
+            color: white;
+            text-align: center;
+            padding: 25px 0;
+            margin-top: 50px;
+        }
+        
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .current-keyword {
+            background-color: var(--light-color);
+            padding: 10px 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .api-badge {
+            display: inline-block;
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+        }
+        
+        .feature-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        @media (max-width: 992px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .menu {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .menu li {
+                margin: 5px 10px;
+            }
+            
+            .search-form {
+                flex-direction: column;
+            }
+            
+            .search-input, .api-selector, .search-button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Multi-Source Content Generator</h1>
+        <p>Jelajahi berbagai konten dari API gratis - 2025 Edition</p>
+    </header>
+    
+    <nav>
+        <div class="nav-container">
+            <div class="logo">ContentExplorer</div>
+            <ul class="menu">
+                <li><a href="#" onclick="loadContent('Python', 'wikipedia')">Beranda</a></li>
+                <li><a href="#" onclick="loadContent('Indonesia', 'countries')">Negara</a></li>
+                <li><a href="#" onclick="loadContent('programming', 'dictionary')">Kamus</a></li>
+                <li><a href="#" onclick="showRandomJoke()">Hiburan</a></li>
+                <li><a href="#" onclick="showAbout()">Tentang</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <main>
+            <div class="search-container">
+                <div class="search-form">
+                    <input type="text" id="searchInput" class="search-input" 
+                           placeholder="Masukkan kata kunci..." value="Python">
+                    <select id="apiSelector" class="api-selector">
+                        <option value="wikipedia">📚 Wikipedia</option>
+                        <option value="dictionary">📖 Kamus Inggris</option>
+                        <option value="countries">🌍 Info Negara</option>
+                        <option value="joke">😊 Random Joke</option>
+                        <option value="dog">🐶 Random Dog</option>
+                    </select>
+                    <button type="button" class="search-button" onclick="searchContent()">Cari Konten</button>
+                </div>
+            </div>
+            
+            <div class="main-content">
+                <div class="current-keyword">
+                    Menampilkan hasil untuk: <strong id="currentKeyword">Python</strong>
+                    <span class="api-badge" id="currentApi">Wikipedia</span>
+                </div>
+                <h2 class="article-title" id="articleTitle">Konten: Python</h2>
+                <div class="article-content" id="articleContent">
+                    <p>Pilih sumber konten dan klik "Cari Konten" untuk memulai.</p>
+                </div>
+            </div>
+        </main>
+        
+        <aside class="sidebar">
+            <h3 class="sidebar-title">Fitur Cepat</h3>
+            <ul class="related-articles">
+                <li><a href="#" onclick="loadContent('JavaScript', 'dictionary')">📖 Definisi JavaScript</a></li>
+                <li><a href="#" onclick="loadContent('Japan', 'countries')">🌍 Info Jepang</a></li>
+                <li><a href="#" onclick="loadContent('Artificial Intelligence', 'wikipedia')">📚 AI di Wikipedia</a></li>
+                <li><a href="#" onclick="showRandomJoke()">😊 Joke Random</a></li>
+                <li><a href="#" onclick="showRandomDog()">🐶 Gambar Anjing</a></li>
+            </ul>
+            
+            <div class="feature-card">
+                <h3>🎯 5 Sumber Gratis</h3>
+                <p>Semua API gratis tanpa perlu API key!</p>
+            </div>
+        </aside>
+    </div>
+    
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2025 Multi-Source Content Generator. Semua hak dilindungi undang-undang.</p>
+            <p>Dibuat dengan Free APIs</p>
+        </div>
+    </footer>
+
+    <script>
+        // Fungsi utama untuk mencari konten
+        async function searchContent() {
+            const keyword = document.getElementById('searchInput').value;
+            const apiType = document.getElementById('apiSelector').value;
+            await loadContent(keyword, apiType);
+        }
+
+        // Fungsi load content berdasarkan API type
+        async function loadContent(keyword, apiType) {
+            if (!keyword && apiType !== 'joke' && apiType !== 'dog') return;
+            
+            // Update UI
+            document.getElementById('currentKeyword').textContent = keyword || 'Random';
+            document.getElementById('articleTitle').textContent = `Konten: ${keyword || 'Hiburan'}`;
+            document.getElementById('currentApi').textContent = document.getElementById('apiSelector').selectedOptions[0].text;
+            document.getElementById('articleContent').innerHTML = '<p>Memuat konten...</p>';
+
+            try {
+                if (apiType === 'wikipedia') {
+                    await loadWikipediaArticle(keyword);
+                } else if (apiType === 'dictionary') {
+                    await loadDictionary(keyword);
+                } else if (apiType === 'countries') {
+                    await loadCountryInfo(keyword);
+                } else if (apiType === 'joke') {
+                    await loadRandomJoke();
+                } else if (apiType === 'dog') {
+                    await loadRandomDog();
+                }
+            } catch (error) {
+                document.getElementById('articleContent').innerHTML = `<p>❌ Error memuat konten: ${error.message}</p>`;
+            }
+        }
+
+        // 1. Wikipedia API
+        async function loadWikipediaArticle(keyword) {
+            try {
+                const response = await fetch(`https://id.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(keyword)}`);
+                
+                if (!response.ok) {
+                    throw new Error('Artikel tidak ditemukan');
+                }
+                
+                const data = await response.json();
+                
+                document.getElementById('articleContent').innerHTML = `
+                    <h3>📚 ${data.title}</h3>
+                    <p>${data.extract}</p>
+                    ${data.thumbnail ? `<img src="${data.thumbnail.source}" alt="${data.title}" style="max-width: 300px; margin: 15px 0; border-radius: 8px;">` : ''}
+                    <p><a href="${data.content_urls.desktop.page}" target="_blank" style="color: var(--secondary-color);">📖 Baca selengkapnya di Wikipedia</a></p>
+                `;
+                
+            } catch (error) {
+                document.getElementById('articleContent').innerHTML = `
+                    <p>❌ Artikel "${keyword}" tidak ditemukan di Wikipedia.</p>
+                    <p>Coba kata kunci lain.</p>
+                `;
+            }
+        }
+
+        // 2. Dictionary API (GRATIS - no API key)
+        async function loadDictionary(keyword) {
+            try {
+                const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(keyword)}`);
+                
+                if (!response.ok) {
+                    throw new Error('Kata tidak ditemukan dalam kamus');
+                }
+                
+                const data = await response.json();
+                
+                let definitionsHTML = '';
+                if (data[0] && data[0].meanings) {
+                    data[0].meanings.forEach((meaning, index) => {
+                        if (index < 3) { // Batasi 3 definisi pertama
+                            definitionsHTML += `
+                                <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                                    <h4>${meaning.partOfSpeech}</h4>
+                                    <p><strong>Definisi:</strong> ${meaning.definitions[0].definition}</p>
+                                    ${meaning.definitions[0].example ? `<p><strong>Contoh:</strong> <em>${meaning.definitions[0].example}</em></p>` : ''}
+                                </div>
+                            `;
+                        }
+                    });
+                }
+                
+                document.getElementById('articleContent').innerHTML = `
+                    <h3>📖 Definisi: ${data[0].word}</h3>
+                    ${data[0].phonetic ? `<p><strong>Pengucapan:</strong> /${data[0].phonetic}/</p>` : ''}
+                    ${definitionsHTML || `<p>Definisi tidak ditemukan</p>`}
+                `;
+                
+            } catch (error) {
+                document.getElementById('articleContent').innerHTML = `
+                    <p>❌ Definisi untuk "${keyword}" tidak ditemukan.</p>
+                    <p>Coba kata dalam bahasa Inggris.</p>
+                `;
+            }
+        }
+
+        // 3. REST Countries API (GRATIS - no API key)
+        async function loadCountryInfo(keyword) {
+            try {
+                const response = await fetch(`https://restcountries.com/v3.1/name/${encodeURIComponent(keyword)}`);
+                
+                if (!response.ok) {
+                    throw new Error('Negara tidak ditemukan');
+                }
+                
+                const data = await response.json();
+                const country = data[0];
+                
+                document.getElementById('articleContent').innerHTML = `
+                    <h3>🌍 ${country.name.common}</h3>
+                    ${country.flags ? `<img src="${country.flags.png}" alt="Bendera ${country.name.common}" style="max-width: 200px; margin: 10px 0; border: 1px solid #ddd;">` : ''}
+                    <p><strong>Nama Resmi:</strong> ${country.name.official}</p>
+                    <p><strong>Ibu Kota:</strong> ${country.capital ? country.capital[0] : 'Tidak diketahui'}</p>
+                    <p><strong>Populasi:</strong> ${country.population.toLocaleString()} jiwa</p>
+                    <p><strong>Wilayah:</strong> ${country.region} - ${country.subregion}</p>
+                    <p><strong>Mata Uang:</strong> ${country.currencies ? Object.values(country.currencies)[0].name : 'Tidak diketahui'}</p>
+                    <p><strong>Bahasa:</strong> ${country.languages ? Object.values(country.languages).join(', ') : 'Tidak diketahui'}</p>
+                `;
+                
+            } catch (error) {
+                document.getElementById('articleContent').innerHTML = `
+                    <p>❌ Info negara "${keyword}" tidak ditemukan.</p>
+                    <p>Coba nama negara dalam bahasa Inggris.</p>
+                `;
+            }
+        }
+
+        // 4. JokeAPI (GRATIS - no API key)
+        async function loadRandomJoke() {
+            try {
+                const response = await fetch("https://v2.jokeapi.dev/joke/Any?type=single");
+                const data = await response.json();
+                
+                document.getElementById('articleContent').innerHTML = `
+                    <div style="text-align: center; padding: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 15px;">
+                        <h3>😊 ${data.category} Joke</h3>
+                        <p style="font-size: 1.2rem; margin: 20px 0;">"${data.joke}"</p>
+                        <button onclick="loadRandomJoke()" style="background: white; color: #667eea; border: none; padding: 10px 20px; border-radius: 25px; cursor: pointer;">Joke Lainnya</button>
+                    </div>
+                `;
+                
+            } catch (error) {
+                document.getElementById('articleContent').innerHTML = `<p>❌ Gagal memuat joke. Coba lagi.</p>`;
+            }
+        }
+
+        // 5. Dog API (GRATIS - no API key)
+        async function loadRandomDog() {
+            try {
+                const response = await fetch("https://dog.ceo/api/breeds/image/random");
+                const data = await response.json();
+                
+                document.getElementById('articleContent').innerHTML = `
+                    <div style="text-align: center;">
+                        <h3>🐶 Random Dog Picture</h3>
+                        <img src="${data.message}" alt="Random Dog" style="max-width: 400px; border-radius: 15px; margin: 15px 0; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                        <br>
+                        <button onclick="loadRandomDog()" style="background: var(--secondary-color); color: white; border: none; padding: 10px 20px; border-radius: 25px; cursor: pointer;">Gambar Lainnya</button>
+                    </div>
+                `;
+                
+            } catch (error) {
+                document.getElementById('articleContent').innerHTML = `<p>❌ Gagal memuat gambar anjing. Coba lagi.</p>`;
+            }
+        }
+
+        // Fungsi untuk menu cepat
+        async function showRandomJoke() {
+            document.getElementById('apiSelector').value = 'joke';
+            document.getElementById('searchInput').value = '';
+            await loadRandomJoke();
+        }
+
+        async function showRandomDog() {
+            document.getElementById('apiSelector').value = 'dog';
+            document.getElementById('searchInput').value = '';
+            await loadRandomDog();
+        }
+
+        function showAbout() {
+            document.getElementById('articleContent').innerHTML = `
+                <h3>📚 Tentang Aplikasi</h3>
+                <p>Aplikasi Multi-Source Content Generator memungkinkan Anda menjelajahi berbagai konten dari API gratis.</p>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 20px 0;">
+                    <div style="padding: 15px; background: #e3f2fd; border-radius: 8px;">
+                        <h4>📚 Wikipedia</h4>
+                        <p>Artikel ensiklopedia dalam bahasa Indonesia</p>
+                    </div>
+                    <div style="padding: 15px; background: #e8f5e8; border-radius: 8px;">
+                        <h4>📖 Dictionary</h4>
+                        <p>Definisi kata dalam bahasa Inggris</p>
+                    </div>
+                    <div style="padding: 15px; background: #fff3e0; border-radius: 8px;">
+                        <h4>🌍 Countries</h4>
+                        <p>Informasi lengkap tentang negara</p>
+                    </div>
+                    <div style="padding: 15px; background: #fce4ec; border-radius: 8px;">
+                        <h4>😊 Jokes</h4>
+                        <p>Random jokes untuk hiburan</p>
+                    </div>
+                    <div style="padding: 15px; background: #f3e5f5; border-radius: 8px;">
+                        <h4>🐶 Dogs</h4>
+                        <p>Gambar anjing lucu random</p>
+                    </div>
+                </div>
+                
+                <p><strong>🔥 Semua API gratis tanpa perlu API key!</strong></p>
+            `;
+            document.getElementById('currentKeyword').textContent = 'Tentang Aplikasi';
+            document.getElementById('articleTitle').textContent = 'Tentang Aplikasi';
+            document.getElementById('currentApi').textContent = 'Info';
+        }
+
+        // Load default content saat halaman dibuka
+        document.addEventListener('DOMContentLoaded', function() {
+            loadContent('Python', 'wikipedia');
+            
+            // Enter key untuk search
+            document.getElementById('searchInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchContent();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
